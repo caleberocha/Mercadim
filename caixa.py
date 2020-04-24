@@ -1,4 +1,5 @@
 from functools import reduce
+import subprocess
 import json
 import requests
 from errors import *
@@ -8,6 +9,7 @@ API_URL = "http://localhost:6000"
 
 
 def start():
+    subprocess.run("clear")
     while True:
         print("I - Iniciar carrinho")
         print("S - Sair")
@@ -21,8 +23,11 @@ def start():
 
 def start_cart():
     products = []
-    print("Pressione F para finalizar o carrinho.")
     while True:
+        subprocess.run("clear")
+        show_products(products)
+
+        print("Pressione F para finalizar o carrinho.")
         key = input("Código do produto: ")
         if key == "F":
             break
@@ -31,14 +36,9 @@ def start_cart():
             product = get_product(key)
             products.append(product)
         except ProductNotFoundError:
-            print("Produto não encontrado")
-
-    print("Produtos:")
-    for p in products:
-        print(p)
+            print("Produto não encontrado")    
 
     total = reduce(lambda a, b: a + b, [p["price"] for p in products])
-
     print("Total: {}".format(total))
 
     while True:
@@ -61,6 +61,16 @@ def start_cart():
             print("Pagamento não aprovado: {}".format(str(e)))
 
     register_sale(products)
+
+
+def show_products(products):
+    if len(products) > 0:
+        print("Carrinho:")
+        for p in products:
+            print("{0:20s} {1}".format(p["name"], p["price"]))
+        print()
+        print("Subtotal: {}".format(reduce(lambda a, b: a + b, [p["price"] for p in products])))
+        print()
 
 
 def get_product(barcode):
