@@ -39,7 +39,8 @@ def start_cart():
             print("Produto não encontrado")    
 
     total = reduce(lambda a, b: a + b, [p["price"] for p in products])
-    print("Total: {}".format(total))
+    print("Total: {0:.2f}".format(total))
+    print()
 
     while True:
         while True:
@@ -61,6 +62,8 @@ def start_cart():
             print("Pagamento não aprovado: {}".format(str(e)))
 
     register_sale(products)
+    print("Finalizado")
+    print()
 
 
 def show_products(products):
@@ -69,7 +72,7 @@ def show_products(products):
         for p in products:
             print("{0:20s} {1}".format(p["name"], p["price"]))
         print()
-        print("Subtotal: {}".format(reduce(lambda a, b: a + b, [p["price"] for p in products])))
+        print("Subtotal: {0:.2f}".format(reduce(lambda a, b: a + b, [p["price"] for p in products])))
         print()
 
 
@@ -112,7 +115,9 @@ def pay_card(total):
     r = requests.post(
         "{}/paycard".format(API_URL), json={"card_number": number, "total": total}
     )
-    if r.status_code != 200:
+    if r.status_code == 400:
+        pass
+    elif r.status_code != 200:
         print("Erro {}: {}".format(r.status_code, r.json()))
 
     ret = r.json()
